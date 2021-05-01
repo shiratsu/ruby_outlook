@@ -119,7 +119,7 @@ module RubyOutlook
       if custom_headers && custom_headers.class == Hash
         conn.headers = conn.headers.merge( custom_headers )
       end
-      
+
       case method.upcase
       when "GET"
         response = conn.get do |request|
@@ -512,7 +512,7 @@ module RubyOutlook
     # fields (array): An array of field names to include in results
     # user (string): The user to make the call for. If nil, use the 'Me' constant.
     # limit (int): The number of items to return. Default is 10.
-    def get_calendar_view(token, window_start, window_end, id = nil, fields = nil, user = nil, limit = 10)
+    def get_calendar_view(token, window_start, window_end, id = nil, fields = nil, user = nil, limit = 10, sort = nil)
       request_url = user_context(user)
 
       unless id.nil?
@@ -527,9 +527,15 @@ module RubyOutlook
           '$top' => limit
       }
 
+      unless sort.nil?
+        request_params['$orderby'] = sort
+      end
+
       unless fields.nil?
         request_params['$select'] = fields.join(',')
       end
+
+      Rails.logger.debug(request_params)
 
       get_view_response =make_api_call "GET", request_url, token, request_params
 
