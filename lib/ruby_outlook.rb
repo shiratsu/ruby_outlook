@@ -535,7 +535,13 @@ module RubyOutlook
         request_params['$select'] = fields.join(',')
       end
 
-      Rails.logger.debug(request_params)
+      # 叩かれたことをログに書き込む
+      t = Time.now
+      strDate = t.strftime("%Y%m%d")
+      strDateTime = t.strftime("%Y-%m-%d %H:%M:%S")
+      File.open("/tmp/outlook-calendar.log-"+strDate, mode = "a"){|f|
+        f.write(strDateTime+"\t"+request_url+"\t"+request_params.inspect+"\n")  # ファイルに書き込む
+      }
 
       get_view_response =make_api_call "GET", request_url, token, request_params
 
